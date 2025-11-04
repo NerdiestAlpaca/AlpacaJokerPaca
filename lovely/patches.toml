@@ -1,0 +1,132 @@
+[manifest]
+version = "2.0"
+dump_lua = true
+priority = 27
+
+# Mr. Yut
+[[patches]]
+[patches.pattern]
+target = "functions/button_callbacks.lua"
+pattern = '''
+G.GAME.skips = (G.GAME.skips or 0) + 1
+'''
+position = "after"
+payload = '''
+if next(SMODS.find_card("j_paca_misteryut")) then
+        G.E_MANAGER:add_event(Event({
+          trigger = 'before', delay = 0.2,
+          func = function()
+            G.blind_prompt_box.alignment.offset.y = -10
+            G.blind_select.alignment.offset.y = 40
+            G.blind_select.alignment.offset.x = 0
+            return true
+        end}))
+    G.E_MANAGER:add_event(Event({
+        trigger = "immediate",
+        func = function()
+            G.GAME.current_round.jokers_purchased = 0
+            G.STATE = G.STATES.SHOP
+            G.STATE_COMPLETE = false
+
+            G.GAME.shop_free = nil
+            G.GAME.shop_d6ed = nil
+            G.GAME.current_round.used_packs = {}
+
+            G.blind_select:remove()
+            G.blind_prompt_box:remove()
+            G.blind_select = nil
+            delay(0.2)    
+            return true
+            end,
+        }))
+end
+'''
+match_indent = true
+times = 1
+
+# Pawprint Deck
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "if add and not G.GAME.banned_keys[v.key] then "
+position = "after"
+payload = '''
+    -- If the selected deck is Pawprint Deck and this key is a Joker-Paca Joker
+    -- add copies of it to the pool, so that it is more common to get
+    local is_paca_pawprint = 
+      (G.GAME.selected_back_key or {}).key == 'b_paca_pawprint'
+
+    if is_paca_pawprint and v.key:find('j_paca_') then
+      for i = 1, 2 do
+        _pool[#_pool + 1] = v.key
+        _pool_size = _pool_size + 3
+      end
+    end
+'''
+match_indent = true
+
+# Arcade Machine, AZ's Weapon
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = '''
+if self.ability.name == 'Golden Joker' then
+	return self.ability.extra
+end
+'''
+position = "at"
+payload = '''
+if self.ability.name == 'Golden Joker' or self.label == 'j_paca_arcade' or self.label == 'j_paca_weapon' then
+	return self.ability.extra
+end
+'''
+match_indent = true
+
+# Red Brick
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/overrides.lua"]'''
+pattern = '''
+	local temp_in_pool = {}
+    for k, v in ipairs(G.P_CENTER_POOLS['Booster']) do
+'''
+position = "at"
+payload = '''
+	local temp_in_pool = {}
+	
+	local booster_pool = {}
+	if #SMODS.find_card('j_paca_redbrick') > 0 then
+		for k, v in ipairs(G.P_CENTER_POOLS['Booster']) do
+			if string.match(v.key, "spectral") then
+				booster_pool[#booster_pool + 1] = v
+			end
+		end
+	else
+		booster_pool = G.P_CENTER_POOLS['Booster']
+	end
+	
+    for k, v in ipairs(booster_pool) do
+'''
+match_indent = true
+
+# Space Insignia
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/game_object.lua"]'''
+pattern = "if G.GAME.used_vouchers.v_omen_globe and pseudorandom('omen_globe') > 0.8 then"
+position = "at"
+payload = '''
+if #SMODS.find_card('j_paca_spaceship') > 0 and pseudorandom('spaceship') > 0.75 then
+	_card = {set = "Planet", area = G.pack_cards, skip_materialize = true, soulable = true, key_append = "ar3"}
+elseif G.GAME.used_vouchers.v_omen_globe and pseudorandom('omen_globe') > 0.8 then
+'''
+match_indent = true
+
+# Plush Pile
+[[patches]]
+[patches.pattern]
+target = '''=[SMODS _ "src/utils.lua"]'''
+pattern = "card_eval_status_text(card, 'debuff')"
+position = "after"
+payload = "SMODS.calculate_context({debuffed_individual = true, other_card = new_card})"
+match_indent = true
