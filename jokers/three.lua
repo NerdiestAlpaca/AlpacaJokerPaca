@@ -10,7 +10,7 @@ SMODS.Joker {
 	},
 	config = {
 		extra = {
-			mult = 5
+			mult = 6
 		}
 	},
 	rarity = 1,
@@ -124,17 +124,17 @@ SMODS.Joker {
 	loc_txt = {
 		name = "Demigod of Chaos",
 		text = {
-			"Gains {C:chips}+#1#{} Chips and {X:mult,C:white}X#2#{} Mult",
+			"Gains {C:chips}+#1#{} Chips and {C:mult}+#2#{} Mult",
 			"if played hand is a {C:attention}Secret Hand{}",
-			"{C:inactive}(Currently {C:chips}+#3#{} {C:inactive}Chips and{} {X:mult,C:white}X#4#{}{C:inactive} Mult{})"
+			"{C:inactive}(Currently {C:chips}+#3#{} {C:inactive}Chips and{} {C:mult}+#4#{}{C:inactive} Mult{})"
 
 		}
 	},
 	config = {
-		chips_gain = 66,
-		mult_gain = 0.6,
+		chips_gain = 40,
+		mult_gain = 6,
 		chips = 0,
-		mult = 1
+		mult = 0
 	},
 	rarity = 3,
 	blueprint_compat = true,
@@ -142,7 +142,7 @@ SMODS.Joker {
 	perishable_compat = false,
 	atlas = "jokers",
 	pos = { x = 5, y = 3 },
-	cost = 9,
+	cost = 8,
 	loc_vars = function(self, info_queue, card)
 		return { vars = { card.ability.chips_gain, card.ability.mult_gain, card.ability.chips, card.ability.mult, G.localization.misc.poker_hands['Flush Five'], G.localization.misc.poker_hands['Flush House'], G.localization.misc.poker_hands['Five of a Kind'] } }
 	end,
@@ -152,13 +152,13 @@ SMODS.Joker {
 			card.ability.mult = card.ability.mult + card.ability.mult_gain
 			return {
 				message = localize('k_upgrade_ex'),
-				colour = G.C.MULT,
+				colour = G.C.GOLD,
 				card = card
 			}
 		elseif context.joker_main then
 			return {
 				chips = card.ability.chips,
-				xmult = card.ability.mult
+				mult = card.ability.mult
 			}
 end
 end
@@ -514,16 +514,9 @@ SMODS.Joker {
 				}
 			else
 				return {
-					chips = card.ability.value_wtf,
-					play_sound("paca_kabong", 1, 4),
-					mult = card.ability.value_wtf,
-					play_sound("paca_kabong", 1, 4),
-					xchips = card.ability.value_wtf,
-					play_sound("paca_kabong", 1, 4),
-					xmult = card.ability.value_wtf,
-					play_sound("paca_kabong", 1, 4),
-					message = "?????????",
-					play_sound("paca_kabong", 1, 4)
+					xchips = card.ability.value_normal,
+					xmult = card.ability.value_normal,
+					play_sound("paca_kabong", 1, 0.3)
 				}
 			end
 			end
@@ -582,8 +575,8 @@ SMODS.Joker {
 	config = {
 		chips_normal = 40,
 		mult_normal = 10,
-		chips_boss = 100,
-		mult_boss = 25,
+		chips_boss = 120,
+		mult_boss = 30,
 		discards_remaining = 0,
 		value_wtf = 99999,
 	},
@@ -615,11 +608,8 @@ SMODS.Joker {
 				}
 			else
 				return {
-					chips = card.ability.value_wtf,
-					mult = card.ability.value_wtf,
-					xchips = card.ability.value_wtf,
-					xmult = card.ability.value_wtf,
-					message = "?????????",
+					chips = card.ability.chips_normal,
+					mult = card.ability.mult_normal,
 				}
 			end
 			end

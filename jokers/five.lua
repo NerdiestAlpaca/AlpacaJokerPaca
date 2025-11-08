@@ -88,7 +88,7 @@ SMODS.Joker {
 	atlas = "jokers",
 	pos = { x = 4, y = 6 },
 	soul_pos = { x = 5, y = 6 },
-	cost = 8,
+	cost = 6,
 	loc_vars = function(self, info_queue, card)
 		return { vars = {
 			card.ability.mult_gain,
