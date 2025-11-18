@@ -51,15 +51,27 @@ target = "functions/common_events.lua"
 pattern = "if add and not G.GAME.banned_keys[v.key] then "
 position = "after"
 payload = '''
-    -- If the selected deck is Pawprint Deck and this key is a Joker-Paca Joker
+    -- If the selected deck OR sleeve is Pawprint and this key is a Joker-Paca Joker
     -- add copies of it to the pool, so that it is more common to get
     local is_paca_pawprint = 
-      (G.GAME.selected_back_key or {}).key == 'b_paca_pawprint'
+      (G.GAME.selected_back_key or {}).key == 'b_paca_pawprint' or (G.GAME.selected_sleeve and G.GAME.selected_sleeve == "sleeve_paca_pawprint")
 
     if is_paca_pawprint and v.key:find('j_paca_') then
       for i = 1, 2 do
         _pool[#_pool + 1] = v.key
         _pool_size = _pool_size + 3
+      end
+    end
+
+    -- If the selected deck AND sleeve is Pawprint and this key is a Joker-Paca Joker
+    -- add more copies of it to the pool, so that it is even more common to get
+    local is_paca_pawprint_plus = 
+      (G.GAME.selected_back_key or {}).key == 'b_paca_pawprint' and (G.GAME.selected_sleeve and G.GAME.selected_sleeve == "sleeve_paca_pawprint")
+
+    if is_paca_pawprint_plus and v.key:find('j_paca_') then
+      for i = 1, 2 do
+        _pool[#_pool + 1] = v.key
+        _pool_size = _pool_size + 12
       end
     end
 '''

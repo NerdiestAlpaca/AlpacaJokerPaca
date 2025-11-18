@@ -147,13 +147,12 @@ SMODS.Joker {
 				mult = card.ability.mult
 			}
 		elseif context.discard and not context.other_card.debuff and not context.blueprint then
-			card.ability.mult = card.ability.mult + card.ability.mult_per_card
-			return {
-				message = localize { type = 'variable', key = 'a_mult',vars = { card.ability.mult }},
-				colour = G.C.RED,
-				delay = 0.45, 
-				card = card
-			}
+			SMODS.scale_card(card, {
+				ref_table = card.ability,
+				ref_value = "mult",
+				scalar_value = "mult_per_card",
+				message_colour = G.C.MULT,
+			})
         end
 	end
 }
@@ -383,28 +382,20 @@ SMODS.Joker {
 				xmult = card.ability.xmult
 			}
 		elseif context.remove_playing_cards and not context.blueprint then
-			local cards = 0
 			for i = 1, #context.removed do
-					cards = cards + 1
-			end
-		
-			G.E_MANAGER:add_event(Event({
-				func = function()
-					G.E_MANAGER:add_event(Event({
-						func = function()
-							card.ability.xmult = card.ability.xmult + cards*card.ability.xmult_gain
-							return true
-						end
-					}))
-					card_eval_status_text(card, 'extra', nil, nil, nil, { message = localize{ type = 'variable', key = 'a_xmult', vars = { card.ability.xmult + cards*card.ability.xmult_gain } } })
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = "xmult",
+					scalar_value = "xmult_gain",
+					message_colour = G.C.MULT,
+				})
+				end
 					play_sound("paca_petula", 1.0, 0.8)
 					return true
 				end
-			}))
 
 			return
 		end
-	end
 }
 
 SMODS.Joker {
@@ -527,7 +518,12 @@ SMODS.Joker {
         		xchips = card.ability.extra.xchips
         	}
         elseif context.game_over and to_big(G.GAME.chips)/G.GAME.blind.chips >= to_big(card.ability.extra.required_chips / 100) and not context.blueprint then
-        	card.ability.extra.xchips = card.ability.extra.xchips + card.ability.extra.xchips_gain
+				SMODS.scale_card(card, {
+					ref_table = card.ability.extra,
+					ref_value = "xchips",
+					scalar_value = "xchips_gain",
+					message_colour = G.C.CHIPS,
+				})
         	G.E_MANAGER:add_event(Event({
 				func = function()
 					G.hand_text_area.blind_chips:juice_up()
@@ -538,11 +534,6 @@ SMODS.Joker {
 			}))
 			G.localization.misc.dictionary.ph_mr_bones = "You can't escape ME, Little Pet..."
 			play_sound("paca_catcher", 1.0, 0.7)
-			return {
-				message = localize { type = 'variable', key = 'a_xchips',vars = { card.ability.extra.xchips }},
-				saved = true,
-				colour = G.C.BLUE
-			}
 		elseif context.ending_shop and not context.blueprint then
 			G.localization.misc.dictionary.ph_mr_bones = card.ability.old_bones
         end

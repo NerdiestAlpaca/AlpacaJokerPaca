@@ -110,6 +110,7 @@ SMODS.Joker {
 	perishable_compat = false,
 	atlas = "jokers",
 	pos = { x = 8, y = 4 },
+	pools = {food = true},
 	cost = 6,
 	loc_vars = function(self, info_queue, card)
 		return {
@@ -225,15 +226,12 @@ SMODS.Joker {
 	cost = 7,
 	calculate = function(self, card, context)
 		if context.using_consumeable and not context.blueprint and (context.consumeable.ability.set == "Spectral" or context.consumeable.ability.set == "Planet") then
-			card.ability.xchips = card.ability.xchips + card.ability.xchips_gain
-			G.E_MANAGER:add_event(
-				Event({
-					func = function()
-						card_eval_status_text(card, 'extra', nil, nil, nil, { message = localize { type='variable', key='a_xchips', vars = { card.ability.xchips } }, colour = G.C.CHIPS });
-						return true
-					end
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = "xchips",
+					scalar_value = "xchips_gain",
+					message_colour = G.C.MULT,
 				})
-			)
 			return
         elseif context.joker_main then
         	return {
@@ -365,7 +363,12 @@ SMODS.Joker {
 					else
 						knife:start_dissolve(nil, false)
 					end
-            		card.ability.xchips = card.ability.xchips + card.ability.xchips_gain,
+					SMODS.scale_card(card, {
+						ref_table = card.ability,
+						ref_value = "xchips",
+						scalar_value = "xchips_gain",
+						message_colour = G.C.MULT,
+					})
 					SMODS.calculate_context({remove_playing_cards = true, removed = { knife }})
                     return true
                 end
@@ -597,8 +600,12 @@ SMODS.Joker {
     if context.after then
       if hand_chips*mult>=G.GAME.blind.chips then
         if not context.blueprint then
-          card.ability.xmult = card.ability.xmult + card.ability.scaling,
-			card_eval_status_text(card, 'extra', nil, nil, nil, { message = localize('k_upgrade_ex'), colour = G.C.MULT })
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = "xmult",
+					scalar_value = "scaling",
+					message_colour = G.C.MULT,
+				})
         end
     end
   end

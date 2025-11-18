@@ -1,0 +1,1 @@
+return {["enableMusic"]=false,["enableTarotSkins"]=true,}

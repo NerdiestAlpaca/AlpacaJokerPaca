@@ -1,4 +1,62 @@
 ------------MOD CODE -------------------------
+local lovely = require("lovely")
+
+ALPACA = SMODS.current_mod
+if NFS.read(SMODS.current_mod.path.."config.lua") then
+    local file = STR_UNPACK(NFS.read(SMODS.current_mod.path.."config.lua"))
+    ALPACA.config_file = file
+end
+
+G.FUNCS.restart_game_smods = function(e)
+	SMODS.restart_game()
+end
+
+ALPACA.config_tab = function()
+	return {
+		n = G.UIT.ROOT,
+		config = {
+			emboss = 0.05,
+			r = 0.1,
+			align = "tl",
+			padding = 0.2,
+			colour = G.C.BLACK
+		},
+		nodes =  {
+				create_toggle(
+				{
+					align = "tl",
+					label = "Custom Music?",
+					ref_table = ALPACA.config_file,
+					ref_value = "enableMusic",
+					callback = function(_set_toggle)
+						ALPACA.config_file.enableMusic = _set_toggle
+						NFS.write(lovely.mod_dir.."/AlpacaJokerpaca/config.lua", STR_PACK(ALPACA.config_file))
+					end
+				}
+			),
+			create_toggle(
+				{
+					align = "tl",
+					label = "Tarot Card Skins?",
+					ref_table = ALPACA.config_file,
+					ref_value = "enableTarotSkins",
+					callback = function(_set_toggle)
+						ALPACA.config_file.enableTarotSkins = _set_toggle
+						NFS.write(lovely.mod_dir .. "/AlpacaJokerpaca/config.lua", STR_PACK(ALPACA.config_file))
+					end
+				}
+			),
+			UIBox_button(
+				{
+					align = "tl",
+					label = { "Apply Changes" }, 
+					minw = 3.5,
+					button = 'restart_game_smods'
+				}
+			),
+		}
+	}
+end
 
 assert(SMODS.load_file('sound.lua'))()
 assert(SMODS.load_file('music.lua'))()
@@ -13,6 +71,10 @@ assert(SMODS.load_file('jokers/three.lua'))()
 assert(SMODS.load_file('jokers/four.lua'))()
 assert(SMODS.load_file('jokers/five.lua'))()
 
+if next(SMODS.find_mod("CardSleeves")) then
+	assert(SMODS.load_file('sleeve.lua'))()
+end
+
 SMODS.Atlas{
     key = 'jokers', --atlas key
     path = 'Jokers.png', --atlas' path in (yourMod)/assets/1x or (yourMod)/assets/2x
@@ -24,6 +86,13 @@ SMODS.Atlas {
     key = "deck",
     path = "deck.png",
     px = 71,
+    py = 95
+}
+
+SMODS.Atlas {
+    key = "sleeve",
+    path = "sleeve.png",
+    px = 73,
     py = 95
 }
 

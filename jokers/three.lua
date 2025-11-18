@@ -148,13 +148,18 @@ SMODS.Joker {
 	end,
 	calculate = function(self, card, context)
 		if context.before and context.cardarea == G.jokers and (next(context.poker_hands['Flush Five']) or next(context.poker_hands['Flush House']) or next(context.poker_hands['Five of a Kind'])) and not context.blueprint then
-			card.ability.chips = card.ability.chips + card.ability.chips_gain
-			card.ability.mult = card.ability.mult + card.ability.mult_gain
-			return {
-				message = localize('k_upgrade_ex'),
-				colour = G.C.GOLD,
-				card = card
-			}
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = "chips",
+					scalar_value = "chips_gain",
+					message_colour = G.C.CHIPS,
+				})
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = "mult",
+					scalar_value = "mult_gain",
+					message_colour = G.C.MULT,
+				})
 		elseif context.joker_main then
 			return {
 				chips = card.ability.chips,
@@ -371,6 +376,7 @@ SMODS.Joker {
 	eternal_compat = false,
     perishable_compat = true,
 	atlas = "jokers",
+	pools = {food = true},
 	pos = { x = 0, y = 4 },
 	cost = 4,
 	loc_vars = function(self, info_queue, card)
@@ -455,8 +461,12 @@ SMODS.Joker {
 	end,
 	calculate = function(self, card, context)
 		if context.individual and not context.blueprint and context.cardarea == G.play then
-			card.ability.chips = card.ability.chips + card.ability.chips_gain
-			card_eval_status_text(card, 'extra', nil, nil, nil, { message = localize('k_upgrade_ex')})
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = "chips",
+					scalar_value = "chips_gain",
+					message_colour = G.C.CHIPS,
+				})
 		elseif context.joker_main then
 			return {
 				chips = card.ability.chips
@@ -642,8 +652,12 @@ SMODS.Joker {
 	end,
 	calculate = function(self, card, context)
 		if context.individual and not context.blueprint and context.cardarea == G.play then
-			card.ability.mult = card.ability.mult + card.ability.mult_gain
-			card_eval_status_text(card, 'extra', nil, nil, nil, { message = localize('k_upgrade_ex')})
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = "mult",
+					scalar_value = "mult_gain",
+					message_colour = G.C.MULT,
+				})
 		elseif context.joker_main then
 			return {
 				mult = card.ability.mult

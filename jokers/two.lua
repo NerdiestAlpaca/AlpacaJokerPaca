@@ -28,9 +28,18 @@ SMODS.Joker {
 	end,
 	calculate = function(self, card, context)
 		if context.individual and not context.blueprint and context.cardarea == G.play and context.other_card.ability.name == 'Gold Card' then
-			card.ability.chips = card.ability.chips + card.ability.chips_gain
-			card.ability.mult = card.ability.mult + card.ability.mult_gain
-			card_eval_status_text(card, 'extra', nil, nil, nil, { message = localize('k_upgrade_ex'), colour = G.C.MULT })
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = "chips",
+					scalar_value = "chips_gain",
+					message_colour = G.C.CHIPS,
+				})
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = "mult",
+					scalar_value = "mult_gain",
+					message_colour = G.C.MULT,
+				})
 		elseif context.joker_main then
 			return {
 				chips = card.ability.chips,
@@ -259,15 +268,12 @@ SMODS.Joker {
 	cost = 6,
 	calculate = function(self, card, context)
 		if context.selling_card and not context.selling_self and context.card.ability.set == "Joker" and not context.blueprint then
-			card.ability.mult = card.ability.mult + card.ability.mult_gain
-			G.E_MANAGER:add_event(
-				Event({
-					func = function()
-						card_eval_status_text(card, 'extra', nil, nil, nil, { message = localize { type = 'variable', key = 'a_mult', vars = { card.ability.mult } }, colour = G.C.MULT });
-						return true
-					end
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = "mult",
+					scalar_value = "mult_gain",
+					message_colour = G.C.MULT,
 				})
-			)
 			return
         elseif context.joker_main then
         	return {
@@ -304,8 +310,12 @@ SMODS.Joker {
 	end,
 	calculate = function(self, card, context)
 		if context.individual and not context.blueprint and context.cardarea == G.play and context.other_card:get_id() == 12 then
-			card.ability.chips = card.ability.chips + card.ability.chips_gain
-			card_eval_status_text(card, 'extra', nil, nil, nil, { message = localize('k_upgrade_ex')})
+				SMODS.scale_card(card, {
+					ref_table = card.ability,
+					ref_value = "chips",
+					scalar_value = "chips_gain",
+					message_colour = G.C.MULT,
+				})
 		elseif context.joker_main then
 			return {
 				chips = card.ability.chips
